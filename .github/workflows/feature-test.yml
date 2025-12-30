@@ -4,24 +4,9 @@ name: Run Test Suite
 on:
   workflow_dispatch:
 
-  push:
-    branches-ignore:
-      - main
-    paths:
-      - 'public/**'
-      - 'src/**'
-      - 'tests/**'
-      - 'package.json'
-      - 'package-lock.json'
   pull_request:
     branches:
       - main
-    paths:
-      - 'public/**'
-      - 'src/**'
-      - 'tests/**'
-      - 'package.json'
-      - 'package-lock.json'
 
 jobs:
   # Job to run the test suite
