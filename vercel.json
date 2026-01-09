@@ -9,7 +9,8 @@
     { "source": "/css/(.*)", "destination": "/css/$1" },
     { "source": "/js/(.*)", "destination": "/js/$1" },
     { "source": "/img/(.*)", "destination": "/img/$1" },
-    { "source": "/favicon.ico", "destination": "/favicon.ico" },
-    { "source": "/(.*)", "destination": "/api" }
+    { "source": "/favicon.ico", "destination": "/img/favicon.ico" },
+    { "source": "/(.*)", "destination": "/api" },
+    { "source": "/", "destination": "/api" }
   ]
 }

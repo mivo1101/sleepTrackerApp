@@ -89,9 +89,6 @@ const inferredUrl = inferBaseUrl();
 
 console.log(`Inferred BASE_URL as: ${inferredUrl}`); // For debugging purposes
 
-
-console.log("Inferred BASE_URL as:", inferredUrl);
-
 /** Application configuration object.
  * Builds up the configuration from environment variables with defaults,
  * and can be used in other modules of the application.
