@@ -8,7 +8,7 @@ const { insightControllers } = require('../controllers');
 
 router.get('/', (req, res) => {
   res.render('pages/home', {
-    title: 'Home',
+    title: 'Wake Up Truly Alive',
     activeMenu: 'home',
   });
 });
@@ -44,16 +44,5 @@ router.get('/terms', (req, res) => {
 
 router.get('/insights', insightControllers.renderInsights);
 router.get('/insights/:slug', insightControllers.renderInsightDetail);
-
-/* ===============================
-   AUTH PAGES
-   =============================== */
-
-router.get('/sign-in', (req, res) => {
-  res.render('pages/signin', {
-    title: 'Sign In',
-    activeMenu: '',
-  });
-});
 
 module.exports = router;
