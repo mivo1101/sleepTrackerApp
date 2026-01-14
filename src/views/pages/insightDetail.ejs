@@ -1,0 +1,60 @@
+<%- include('../components/header') %>
+
+<main class="insight-detail-page">
+  <div class="insight-shell">
+    <nav class="crumbs">
+      <a href="/">Home</a>
+      <span>/</span>
+      <a href="/insights">Insights</a>
+      <span>/</span>
+      <span><%= article.title %></span>
+    </nav>
+
+    <header class="detail-header">
+      <div class="pill-row">
+        <% if (article.tags && article.tags.length) { %>
+          <% article.tags.forEach(function(tag){ %>
+            <span class="pill"><%= tag %></span>
+          <% }) %>
+        <% } %>
+      </div>
+      <h1 class="detail-title"><%= article.title %></h1>
+      <div class="meta-row">
+        <span><%= article.author || 'Alive Sleep Team' %></span>
+        <span class="dot">•</span>
+        <span><%= article.date || '' %></span>
+        <% if (article.readTime) { %>
+          <span class="dot">•</span>
+          <span><%= article.readTime %></span>
+        <% } %>
+      </div>
+    </header>
+
+    <section class="hero-block">
+      <div class="hero-image">
+        <img src="<%= article.image || fallbackImage %>" alt="<%= article.title %>">
+      </div>
+      <div class="hero-quote">
+        <p>
+          <%= article.excerpt || 'Recent findings indicate that 40% of people worldwide experience poor sleep, leading to weakened immune function.' %>
+        </p>
+      </div>
+    </section>
+
+    <article class="detail-body">
+      <%- article.body || '<p>Content coming soon.</p>' %>
+    </article>
+
+    <section class="tip-card">
+      <h3>3 Steps to Find Your Optimal Number</h3>
+      <ol>
+        <li><strong>The Vacation Test:</strong> During a week off, go to bed when tired and wake up naturally without an alarm. After 3-4 days, average your sleep duration.</li>
+        <li><strong>Track Consistency:</strong> Use the Alive Sleep Tracker App to monitor your "Deep Sleep" percentage, not just total time.</li>
+        <li><strong>Respect the Window:</strong> Try to go to sleep and wake up at the same time every day, even on weekends, to regulate your circadian rhythm.</li>
+      </ol>
+      <p class="tip-foot">Stop obsessing over the number "8." Instead, focus on consistency and quality.</p>
+    </section>
+  </div>
+</main>
+
+<%- include('../components/footer') %>
