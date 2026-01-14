@@ -20,8 +20,17 @@ async function startServer() {
     const app = createApp();
 
     // Start listening on the specified port
-    app.listen(PORT, () => {
+    const server = app.listen(PORT, () => {
       console.log(`Alive Sleep Tracker App server listening on http://localhost:${PORT}`);
+    });
+
+    // Provide a clearer message if the port is already in use
+    server.on('error', (err) => {
+      if (err.code === 'EADDRINUSE') {
+        console.error(`Port ${PORT} is already in use. Set a free PORT in your .env or stop the other process.`);
+        process.exit(1);
+      }
+      throw err;
     });
   } catch (error) {
     // Handle errors during startup

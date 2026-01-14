@@ -8,8 +8,6 @@ const userService = require('../services/userService');
 
 /**
  * Extract a human-friendly display name for the authenticated user.
- * @param user {object} - The authenticated user object.
- * @returns {*|null} - The display name or null if not available.
  */
 function getDisplayName(user) {
   return user?.name || user?.email || null;
@@ -17,11 +15,10 @@ function getDisplayName(user) {
 
 /**
  * Construct a profile object with non-sensitive user information.
- * @param user - The authenticated user object.
- * @returns {{sub: *, email, name}|null} - The profile or null if user is not provided.
  */
 function buildUserProfile(user) {
   if (!user) return null;
+
   const { sub, email, name } = user;
   return {
     sub,
@@ -31,55 +28,28 @@ function buildUserProfile(user) {
 }
 
 /**
- * Determine whether the current session is authenticated.
- * Ensures function does not crash if data are not available.
- * @param res - The response object with session data.
- * @returns {boolean} - True if authenticated, false otherwise.
- */
-function isAuthenticated(res) {
-  // Return isAuthenticated from res.locals if available
-  if (typeof res?.locals?.isAuthenticated === 'boolean') {
-    return res.locals.isAuthenticated;
-  }
-  // Otherwise return false
-  return false;
-}
-
-/**
- * Middleware to synchronize authenticated user with application user records.
- * @param req - The request object.
- * @param res - The response object.
- * @param next - The next middleware function.
- * @returns {Promise<*>} - Proceeds to the next middleware.
+ * Synchronize authenticated user with database.
  */
 async function userSyncMiddleware(req, res, next) {
   try {
-    // Determine if the user is authenticated
     const isAuthenticated = Boolean(req.oidc?.isAuthenticated?.() && req.oidc.user);
 
-    // Set local variables for use in views and downstream middleware
-    // Flag if user is authenticated
     res.locals.isAuthenticated = isAuthenticated;
-    // Raw user object from Auth0 if authenticated
     res.locals.user = isAuthenticated ? req.oidc.user : null;
-    // User Display name if authenticated
     res.locals.displayName = isAuthenticated ? getDisplayName(req.oidc.user) : null;
-    // User profile with non-sensitive info if authenticated
     res.locals.userProfile = isAuthenticated ? buildUserProfile(req.oidc.user) : null;
-    // User record from application database (will be created later)
     res.locals.userRecord = null;
-    // Flag indicating if this is the user's first login
     res.locals.isFirstLogin = false;
 
-    // If not authenticated, proceed to next middleware
     if (!isAuthenticated) {
       return next();
     }
 
-    // Retrieve or create the user record in a single atomic operation
+    // Create or retrieve user record
     const userRecord = await userService.getOrCreateUser(req.oidc.user.sub);
     res.locals.userRecord = userRecord;
-    // Determine if this is the first login based on timestamps, if available
+
+    // Detect first login by comparing timestamps
     res.locals.isFirstLogin =
       userRecord?.createdAt instanceof Date &&
       userRecord?.updatedAt instanceof Date &&
@@ -93,10 +63,12 @@ async function userSyncMiddleware(req, res, next) {
 }
 
 /**
- * Build the Auth0 configuration object.
- * @returns {object} - The Auth0 configuration.
+ * Build Auth0 configuration object for express-openid-connect.
  */
 function buildAuthConfig() {
+  // Debug log to verify correct .env loading
+  console.log("DEBUG AUTH0 CONFIG:", appConfig.AUTH0);
+
   return {
     authRequired: false,
     auth0Logout: true,
@@ -119,22 +91,17 @@ function buildAuthConfig() {
 }
 
 /**
- * Create the Auth0 authentication middleware.
- * @returns {function} - The Auth0 authentication middleware.
+ * Auth0 middleware factory.
  */
 function createAuthMiddleware() {
   return auth(buildAuthConfig());
 }
 
 /**
- * Require auth for API routes: respond with a consistent 401 JSON error.
- * Usage: router.get('/api/user', requireAuthAPI, apiControllerFn)
- * @param req - The request object.
- * @param res - The response object.
- * @param next - The next middleware function.
+ * Require authentication for API routes.
  */
 function requireAuthAPI(req, res, next) {
-  if (isAuthenticated(res)) return next();
+  if (res.locals.isAuthenticated) return next();
 
   return res.status(401).json({
     success: false,
@@ -146,14 +113,10 @@ function requireAuthAPI(req, res, next) {
 }
 
 /**
- * Require auth for page routes: redirect to /auth/login if not authentificated.
- * Usage: router.get('/dashboard', requireAuthRoute, pageControllerFn)
- * @param req - The request object.
- * @param res - The response object.
- * @param next - The next middleware function.
+ * Require authentication for page routes.
  */
 function requireAuthRoute(req, res, next) {
-  if (isAuthenticated(res)) return next();
+  if (res.locals.isAuthenticated) return next();
 
   const returnTo = encodeURIComponent(req.originalUrl || '/dashboard');
   return res.redirect(`/auth/login?returnTo=${returnTo}`);

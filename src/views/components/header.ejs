@@ -10,36 +10,45 @@
     <link rel="stylesheet" href="/css/styles.css" />
   </head>
   <body class="grey lighten-5">
-    <nav class="grey darken-3">
-      <div class="nav-wrapper container nav-layout">
+    <nav class="top-nav">
+      <div class="nav-shell">
         <div class="nav-left">
-          <a href="/" class="nav-brand white-text">Alive</a>
+          <a href="/" class="nav-brand">
+            <img src="/img/logo.svg" alt="Alive logo" class="brand-logo" />
+            <span class="brand-text">ALiVE</span>
+          </a>
         </div>
-        <a href="#" data-target="mobile-nav" class="sidenav-trigger white-text hide-on-large-only">
-          <i class="material-icons white-text">menu</i>
+
+        <a href="#" data-target="mobile-nav" class="sidenav-trigger nav-mobile-toggle hide-on-med-and-up" aria-label="Open navigation">
+          <i class="material-icons">menu</i>
         </a>
-        <div class="nav-center hide-on-med-and-down">
-          <ul class="nav-menu">
-            <%- include('./navMenu') %>
-          </ul>
+
+        <div class="nav-center hide-on-small-and-down">
+          <div class="nav-pill">
+            <ul class="nav-menu">
+              <%- include('./navMenu') %>
+            </ul>
+          </div>
         </div>
-        <div class="nav-right hide-on-med-and-down">
+
+        <div class="nav-right hide-on-small-and-down">
           <% if (typeof isAuthenticated !== 'undefined' && isAuthenticated) { %>
-            <a href="/dashboard" class="btn waves-effect waves-light">My Sleep Data</a>
-            <a href="/auth/logout" class="btn-flat waves-effect waves-light white-text">Sign Out</a>
+            <a href="/dashboard" class="nav-signin">Dashboard</a>
+            <a href="/auth/logout" class="nav-signout">Sign Out</a>
           <% } else { %>
-            <a href="/auth/login" class="btn waves-effect waves-light">Sign In / Register</a>
+            <a href="/sign-in" class="nav-signin">Sign In</a>
           <% } %>
         </div>
       </div>
     </nav>
+
     <ul class="sidenav" id="mobile-nav">
       <%- include('./navMenu') %>
       <% if (typeof isAuthenticated !== 'undefined' && isAuthenticated) { %>
-        <li><a href="/dashboard">My Sleep Data</a></li>
+        <li><a href="/dashboard">Dashboard</a></li>
         <li><a href="/auth/logout">Sign Out</a></li>
       <% } else { %>
-        <li><a href="/auth/login">Sign In / Register</a></li>
+        <li><a href="/sign-in">Sign In</a></li>
       <% } %>
     </ul>
 
