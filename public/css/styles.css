@@ -542,6 +542,14 @@ body {
   background: #0a223d;
 }
 
+.visually-hidden {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
 .card-actions {
   display: flex;
   gap: 10px;
