@@ -1,5 +1,122 @@
 document.addEventListener('DOMContentLoaded', function() {
     
+    // Use the global socket from header or create if needed
+    let socket = window.socket || io();
+    window.socket = socket; // Store globally for other scripts
+    
+    console.log('[Dashboard] Using Socket.IO:', socket);
+    console.log('[Dashboard] Socket connected?', socket.connected);
+    
+    // Listen for bedtime notifications
+    socket.on('schedule:notification', function(notification) {
+        console.log('[Dashboard] Received notification:', notification);
+        console.log('[Dashboard] Notification type:', notification.type);
+        console.log('[Dashboard] Is bedtime?', notification.type === 'bedtime');
+        
+        if (notification.type === 'bedtime') {
+            console.log('[Dashboard] Calling showBedtimeNotification...');
+            showBedtimeNotification(notification);
+        } else {
+            console.log('[Dashboard] Notification type is not bedtime, skipping...');
+        }
+    });
+    
+    socket.on('connect', function() {
+        console.log('[Dashboard] Socket connected successfully, ID:', socket.id);
+    });
+    
+    socket.on('disconnect', function() {
+        console.log('[Dashboard] Socket disconnected');
+    });
+
+    function showBedtimeNotification(notification) {
+        console.log('[Notification] Creating notification element...');
+        console.log('[Notification] Notification data:', notification);
+        
+        // Create notification element
+        const notifDiv = document.createElement('div');
+        notifDiv.className = 'bedtime-notification';
+        notifDiv.innerHTML = `
+            <div class="notif-content">
+                <h4>${notification.title}</h4>
+                <p>${notification.message}</p>
+                <small>${new Date(notification.timestamp).toLocaleTimeString()}</small>
+            </div>
+            <button class="notif-close" onclick="this.parentElement.remove()">×</button>
+        `;
+        
+        // Add CSS styles
+        notifDiv.style.cssText = `
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            max-width: 400px;
+            z-index: 9999;
+            animation: slideIn 0.3s ease-out;
+        `;
+        
+        // Add animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(450px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            .bedtime-notification {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+            .notif-content {
+                flex: 1;
+            }
+            .notif-close {
+                background: none;
+                border: none;
+                color: white;
+                font-size: 24px;
+                cursor: pointer;
+                padding: 0;
+                margin-left: 15px;
+                opacity: 0.8;
+                transition: opacity 0.2s;
+            }
+            .notif-close:hover {
+                opacity: 1;
+            }
+        `;
+        document.head.appendChild(style);
+        
+        document.body.appendChild(notifDiv);
+        console.log('[Notification] Notification added to DOM');
+        
+        // Auto-remove after 10 seconds
+        setTimeout(() => {
+            if (notifDiv.parentElement) {
+                notifDiv.remove();
+            }
+        }, 10000);
+
+        // Browser notification if permission granted
+        if ('Notification' in window && Notification.permission === 'granted') {
+            new Notification(notification.title, {
+                body: notification.message,
+                icon: '/img/logo/icon.png',
+            });
+        }
+    }
+    
     // 1. Sleep Log: Toggle between Time and Duration
     const toggleButtons = document.querySelectorAll('.js-log-toggle');
     const viewDuration = document.getElementById('view-duration');
