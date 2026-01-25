@@ -285,5 +285,3 @@ module.exports = {
     getOrCreateSleepEntry,
     deleteSleepEntryByDate,
 };
-
-
