@@ -1,7 +1,6 @@
-<%- include('../components/header') %>
-  <link rel="stylesheet" href="/css/dashboard.css">
+<%- include('../components/header', { isDashboard: true }) %>
 
-  <main class="dashboard-page">
+<main class="dashboard-page">
     <div class="dash-shell">
 
       <section class="dash-hero">
@@ -28,105 +27,70 @@
                 <div class="col s8">
                   <input type="date" id="sleep-date" class="browser-default sleep-date-picker">
                 </div>
-              </div>
-
-              <div class="center-align">
-                <div class="chip-toggle">
-                  <button class="chip js-log-toggle" data-view="time">By Time</button>
-                  <button class="chip active js-log-toggle" data-view="duration">By Duration</button>
-                </div>
-              </div>
-
-              <div id="view-duration" class="log-view">
-                <div class="row valign-wrapper">
-                  <div class="col s4">
-                    <p>Duration</p>
-                  </div>
-                  <div class="col s8 flex-row-align">
-                    <select id="input-hours" class="browser-default inline-select">
-                      <% for(let h=0; h<=24; h++) { %>
-                        <option value="<%= h %>">
-                          <%= h.toString().padStart(2, '0' ) %>
-                        </option>
-                        <% } %>
-                    </select>
-                    <span class="unit-label">hours</span>
-
-                    <select id="input-minutes" class="browser-default inline-select">
-                      <% for(let m=0; m<60; m++) { %>
-                        <option value="<%= m %>">
-                          <%= m.toString().padStart(2, '0' ) %>
-                        </option>
-                        <% } %>
-                    </select>
-                    <span class="unit-label">minutes</span>
-                  </div>
-                </div>
-              </div>
-
-              <div id="view-time" class="log-view" style="display: none;">
-                <div class="row valign-wrapper">
-                  <div class="col s4">
-                    <p>Bed-Wake Time</p>
-                  </div>
-                  <div class="col s8">
-                    <input type="time" class="browser-default inline-select" value="22:00"> to
-                    <input type="time" class="browser-default inline-select" value="06:30">
-                  </div>
-                </div>
-              </div>
-
-              <div class="range-container">
-                <p>Rate Your Sleep</p>
-                <p class="range-field">
-                  <input type="range" id="sleep-rate" min="0" max="10" value="8" />
-                </p>
-              </div>
-
-              <div class="card-footer">
-                <button id="btn-view-summary" class="btn black white-text main-action-btn z-depth-0">View
-                  Summary</button>
-              </div>
             </div>
-          </div>
+
+            <div class="col s12 l6 dash-col">
+                <div class="dash-card preview-card">
+                    <div class="card-head">
+                        <h3>Preview Your Sleep Log</h3>
+                    </div>
+                    <div class="card-body">
+                        <p>Total Sleep</p>
+                        <div class="total-pill center-align">8 hrs 30 mins</div>
+
+                        <div class="row info-row">
+                            <div class="col s5">
+                                <p>Time Window</p>
+                            </div>
+                            <div class="col s7">
+                                <p id="preview-time-window" class="strong">10:00 PM - 06:30 AM</p>
+                            </div>
+                        </div>
+
+                        <div class="row info-row">
+                            <div class="col s5">
+                                <p>Sleep Quality</p>
+                            </div>
+                            <div class="col s7">
+                                <p id="preview-quality" class="strong">8/10 - Good</p>
+                            </div>
+                        </div>
+
+                        <p class="italic-note">Once saved, this cannot be edited.</p>
+
+                        <div class="card-footer">
+                            <button class="btn black white-text main-action-btn z-depth-0">
+                                Confirm and Save
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div id="saved-sleep-display" class="container" style="display: none; margin-bottom: 20px;">
+            <div class="card-panel teal white-text">
+                <h5>Latest Logged Entry</h5>
+                <p id="final-log-text"></p>
+            </div>
         </div>
 
-        <div class="col s12 l6 dash-col">
-          <div class="dash-card preview-card">
-            <div class="card-head">
-              <h3>Preview Your Sleep Log</h3>
+        <div class="card history-card">
+            <div class="card-content">
+                <span class="card-title">Recent Sleep History</span>
+                <table class="striped">
+                    <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Duration</th>
+                        <th>Quality</th>
+                    </tr>
+                    </thead>
+                    <tbody id="sleep-history-body">
+                    </tbody>
+                </table>
             </div>
-            <div class="card-body">
-              <p>Total Sleep</p>
-              <div class="total-pill center-align">8 hrs 30 mins</div>
-
-              <div class="row info-row">
-                <div class="col s5">
-                  <p>Time Window</p>
-                </div>
-                <div class="col s7">
-                  <p id="preview-time-window" class="strong">10:00 PM - 06:30 AM</p>
-                </div>
-              </div>
-
-              <div class="row info-row">
-                <div class="col s5">
-                  <p>Sleep Quality</p>
-                </div>
-                <div class="col s7">
-                  <p id="preview-quality" class="strong">8/10 - Good</p>
-                </div>
-              </div>
-
-              <p class="italic-note">Once saved, this cannot be edited.</p>
-
-              <div class="card-footer">
-                <button class="btn black white-text main-action-btn z-depth-0">Confirm and Save</button>
-              </div>
-            </div>
-          </div>
         </div>
-      </section>
 
       <div id="saved-sleep-display" class="container" style="display: none; margin-bottom: 20px;">
         <div class="card-panel teal white-text">
@@ -400,11 +364,9 @@
       </div>
     </section>
     </div>
-  </main>
+</main>
 
+<%- include('../components/footer', { isDashboard: true }) %>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script
     src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
-
-
-  <%- include('../components/footer', { loadDashboardScripts: true }) %>
