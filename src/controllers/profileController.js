@@ -1,8 +1,31 @@
+const { Message } = require('../models');
+
 /**
  * Profile page. Uses requireAuthRoute + res.locals (user, userRecord).
  */
-function renderProfile(req, res) {
-  res.render('pages/profile', { title: 'Profile', activeSection: 'profile' });
+async function renderProfile(req, res) {
+  try {
+    // Fetch the data
+    const messages = await Message.find({
+      userId: res.locals.user._id, // Get current user's ID
+      type: { $in: ['announcement', 'system'] } // Look for both types
+    }).sort({ createdAt: -1 }); // Newest on top
+
+    // Render the page with data
+    res.render('pages/profile', {
+      title: 'Profile',
+      activeSection: 'profile',
+      announcements: messages
+    });
+
+  } catch (err) {
+    console.error("Error loading profile messages:", err);
+    res.render('pages/profile', {
+      title: 'Profile',
+      activeSection: 'profile',
+      announcements: []
+    });
+  }
 }
 
 /**

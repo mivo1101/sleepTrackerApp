@@ -76,14 +76,14 @@
           var gain = item.gain;
           try {
             osc.stop(audioContext.currentTime);
-          } catch (_) {}
+          } catch (_) { }
           try {
             osc.disconnect();
-          } catch (_) {}
+          } catch (_) { }
           if (gain)
             try {
               gain.disconnect();
-            } catch (_) {}
+            } catch (_) { }
         } catch (e) {
           console.log('[Sound] Error stopping oscillator:', e.message);
         }
@@ -101,7 +101,7 @@
       $('<style id="bedtime-notification-styles">')
         .text(
           '@keyframes slideIn{from{transform:translateX(450px);opacity:0}to{transform:translateX(0);opacity:1}}' +
-            '.notif-stop:hover{background:#ff6b7a!important}'
+          '.notif-stop:hover{background:#ff6b7a!important}'
         )
         .appendTo('head');
     }
@@ -126,20 +126,20 @@
       })
       .html(
         '<div class="notif-content">' +
-          '<h4>' +
-          escapeHtml(title) +
-          '</h4>' +
-          '<p>' +
-          escapeHtml(message) +
-          '</p>' +
-          '<small>' +
-          escapeHtml(timeStr) +
-          '</small>' +
-          '</div>' +
-          '<div class="notif-buttons" style="display:flex;gap:10px;margin-left:15px;">' +
-          '<button class="notif-stop" type="button" style="background:#ff4757;border:none;color:white;padding:8px 15px;border-radius:4px;cursor:pointer;font-weight:bold;">STOP</button>' +
-          '<button class="notif-close" type="button" style="background:none;border:none;color:white;font-size:24px;cursor:pointer;padding:0;margin-left:5px;">×</button>' +
-          '</div>'
+        '<h4>' +
+        escapeHtml(title) +
+        '</h4>' +
+        '<p>' +
+        escapeHtml(message) +
+        '</p>' +
+        '<small>' +
+        escapeHtml(timeStr) +
+        '</small>' +
+        '</div>' +
+        '<div class="notif-buttons" style="display:flex;gap:10px;margin-left:15px;">' +
+        '<button class="notif-stop" type="button" style="background:#ff4757;border:none;color:white;padding:8px 15px;border-radius:4px;cursor:pointer;font-weight:bold;">STOP</button>' +
+        '<button class="notif-close" type="button" style="background:none;border:none;color:white;font-size:24px;cursor:pointer;padding:0;margin-left:5px;">×</button>' +
+        '</div>'
       );
 
     $('body').append(notifDiv);
@@ -194,4 +194,42 @@
       showNotificationPopup(data);
     }
   });
+
+  // --- NEW: CHAT MESSAGE HANDLERS ---
+
+  // 1. Listen for YOUR message (confirmation from server)
+  socket.on('chat:message', function (data) {
+    console.log('[Chat] My message sent:', data);
+    appendMessageToUI(data.content, 'sent');
+  });
+
+  // 2. Listen for BOT reply
+  socket.on('chat:reply', function (data) {
+    console.log('[Chat] Bot replied:', data);
+    appendMessageToUI(data.content, 'received');
+  });
+
+  // Helper function to draw the bubbles
+  function appendMessageToUI(text, type) {
+    var chatContainer = $('#chat-container'); // Uses jQuery since your file uses it
+    if (!chatContainer.length) return;
+
+    var bubble = $('<div>')
+      .addClass('message-bubble')
+      .text(text)
+      .css({
+        padding: '10px',
+        margin: '5px',
+        borderRadius: '10px',
+        maxWidth: '70%',
+        clear: 'both',
+        float: type === 'sent' ? 'right' : 'left',
+        background: type === 'sent' ? '#007bff' : '#e0e0e0',
+        color: type === 'sent' ? 'white' : 'black'
+      });
+
+    chatContainer.append(bubble);
+    // Auto-scroll to bottom
+    chatContainer.scrollTop(chatContainer[0].scrollHeight);
+  }
 })(jQuery);
