@@ -194,42 +194,5 @@
       showNotificationPopup(data);
     }
   });
-
-  // --- NEW: CHAT MESSAGE HANDLERS ---
-
-  // 1. Listen for YOUR message (confirmation from server)
-  socket.on('chat:message', function (data) {
-    console.log('[Chat] My message sent:', data);
-    appendMessageToUI(data.content, 'sent');
-  });
-
-  // 2. Listen for BOT reply
-  socket.on('chat:reply', function (data) {
-    console.log('[Chat] Bot replied:', data);
-    appendMessageToUI(data.content, 'received');
-  });
-
-  // Helper function to draw the bubbles
-  function appendMessageToUI(text, type) {
-    var chatContainer = $('#chat-container'); // Uses jQuery since your file uses it
-    if (!chatContainer.length) return;
-
-    var bubble = $('<div>')
-      .addClass('message-bubble')
-      .text(text)
-      .css({
-        padding: '10px',
-        margin: '5px',
-        borderRadius: '10px',
-        maxWidth: '70%',
-        clear: 'both',
-        float: type === 'sent' ? 'right' : 'left',
-        background: type === 'sent' ? '#007bff' : '#e0e0e0',
-        color: type === 'sent' ? 'white' : 'black'
-      });
-
-    chatContainer.append(bubble);
-    // Auto-scroll to bottom
-    chatContainer.scrollTop(chatContainer[0].scrollHeight);
-  }
+  
 })(jQuery);
